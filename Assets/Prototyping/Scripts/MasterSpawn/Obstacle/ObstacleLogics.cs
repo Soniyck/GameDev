@@ -8,21 +8,39 @@ public class ObstacleLogics : MonoBehaviour {
 	Master master = new Master();
 	private float speed;
 
+
 	void Start(){
 		speed = Random.Range (0.5f, 1.5f);
 	}
 
-	public void ObstacleMovement()
+    void Update()
+    {
+        ObstacleMovement();
+    }
+
+
+
+    public void ObstacleMovement()
 	{
-		
-
-
-		this.transform.position = new Vector3(this.transform.position.x +  speed * master.difficulty / 10, this.transform.position.y, this.transform.position.z);
-
+		this.transform.position = new Vector3(this.transform.position.x + speed * HardConfiguration.StartDifficulty / 10,
+                                              this.transform.position.y,
+                                              this.transform.position.z);
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		ObstacleMovement ();
-	}
+
+
+    // On player collision with obstacle
+    void OnCollisionEnter(Collision col)
+    {
+
+        if (col.gameObject.tag == "Player")
+        {
+            // There are several types of obstacles, every type acts differently on collision with player
+            if (this.Type == 1)
+            {
+                Player.DeathIsForced = true;
+            }
+        }
+    }
+
+
 }

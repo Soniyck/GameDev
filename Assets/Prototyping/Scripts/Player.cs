@@ -1,14 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using AppConfiguration;
 
 public class Player : MonoBehaviour {
-
-	public Transform MinYObject,
-	MaxYObject;
-
-	private float MinY,
-	MaxY;
 
 	private bool ShouldGoDown = false;
 
@@ -16,21 +11,16 @@ public class Player : MonoBehaviour {
 	public float ActualSpeed = 0f;
 
 	public Transform BloodyVignetteBottom,
-	BloodyVignetteTop;
+	                 BloodyVignetteTop;
 
 
 	void Start(){
-		MinY = MinYObject.transform.position.y;
-		MaxY = MaxYObject.transform.position.y;
-
-		BloodyVignetteBottom.GetComponent<Image> ().CrossFadeAlpha (0f, 1f, false);
+        BloodyVignetteBottom.GetComponent<Image> ().CrossFadeAlpha (0f, 1f, false);
 		BloodyVignetteTop.GetComponent<Image> ().CrossFadeAlpha (0f, 1f, false);
-
 	}
 
 	void Update(){
 		PlayerMovementLogics ();
-
 		VisualiseBarrier ();
 	}
 
@@ -39,12 +29,13 @@ public class Player : MonoBehaviour {
 	}
 
 
-	//vars used by this function
+	
+
 
 	public float MovementOffsetTime = 1.5f;
 	private bool DuringOffset = false;
-
-	private void Offset(){
+    //vars used by this function
+    private void Offset(){
 		if (DuringOffset == true) {
 			
 			SlowDown = true;
@@ -57,6 +48,9 @@ public class Player : MonoBehaviour {
 			}
 		}
 	}
+
+
+
 
 	private void PlayerMovementLogics (){
 		//raise
@@ -85,52 +79,63 @@ public class Player : MonoBehaviour {
 		Offset ();
 	}
 
+
+
+
 	private bool SlowDown;
 	private float dir;
 	public void ApplyMovement(){
 		ActualSpeed = ActualSpeed * 1f;
 
-		if (ActualSpeed < FlyingSpeed&&SlowDown == false) {
+		if (ActualSpeed < FlyingSpeed && SlowDown == false) {
 			ActualSpeed += 0.5f * Time.deltaTime;
 		}
 
 		if (SlowDown && ActualSpeed > 0f) {
 			ActualSpeed -= FlyingSpeed/MovementOffsetTime * Time.deltaTime;
 		}
+
 		transform.Translate(Vector3.up * Time.deltaTime * ActualSpeed * dir, Space.World);
 	}
 
 	private bool BarrierReached(){
-		if (this.transform.position.y < MinY || this.transform.position.y > MaxY) {
+		if (this.transform.position.y < HardConfiguration.MinY || this.transform.position.y > HardConfiguration.MaxY) {
 			return true;
 		}
-			return false;
+
+        return false;
 	}
 
+
+
+
+    // When player moves close to edge
 	private void VisualiseBarrier(){
 		//top
-		if (this.transform.position.y < MinY - MinY / 2f) {
-			BloodyVignetteBottom.GetComponent<Image> ().CrossFadeAlpha (1f, 1f, false);
+		if (this.transform.position.y < HardConfiguration.MinY - HardConfiguration.MinY / 2f) {
+			BloodyVignetteBottom.GetComponent<Image>().CrossFadeAlpha (1f, 1f, false);
 		} else {
-			BloodyVignetteBottom.GetComponent<Image> ().CrossFadeAlpha (0f, 1f, false);
+			BloodyVignetteBottom.GetComponent<Image>().CrossFadeAlpha (0f, 1f, false);
 		}
 		//bottom
-		if (this.transform.position.y > MaxY - MaxY / 2f) {
-			BloodyVignetteTop.GetComponent<Image> ().CrossFadeAlpha (1f, 1f, false);
+		if (this.transform.position.y > HardConfiguration.MaxY - HardConfiguration.MaxY / 2f) {
+			BloodyVignetteTop.GetComponent<Image>().CrossFadeAlpha (1f, 1f, false);
 		} else {
-			BloodyVignetteTop.GetComponent<Image> ().CrossFadeAlpha (0f, 1f, false);
+			BloodyVignetteTop.GetComponent<Image>().CrossFadeAlpha (0f, 1f, false);
 		}
 	}
 
 
-	private bool DeathIsForced;
-	//this is for barriers
+
+
+	public static bool DeathIsForced;
+    // When player dies
 	private void UponDeath(){
 		if (BarrierReached () || DeathIsForced) {
-			if (this.transform.position.y < MinY && DeathIsForced == false) {
+			if (this.transform.position.y < HardConfiguration.MinY && DeathIsForced == false) {
 				this.transform.GetComponent<Rigidbody> ().velocity = new Vector3 (10f, 10f, 0f);
 			}
-			if (this.transform.position.y > MaxY && DeathIsForced == false) {
+			if (this.transform.position.y > HardConfiguration.MaxY && DeathIsForced == false) {
 				this.transform.GetComponent<Rigidbody> ().velocity = new Vector3 (10f, -10f, 0f);
 			}
 
@@ -151,14 +156,5 @@ public class Player : MonoBehaviour {
 		}
 	}
 
-	//this is for obstacles, other cases
-	void OnCollisionEnter(Collision col){
-		if(col.gameObject.tag == "Obstacle"){
-			
-			if(col.gameObject.GetComponent<ObstacleLogics>().Type == 1){
-				Debug.Log ("Fuckoff");
-				DeathIsForced = true;
-			}
-		}
-	}
+	
 }

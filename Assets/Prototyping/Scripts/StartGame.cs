@@ -8,7 +8,6 @@ public class StartGame : MonoBehaviour {
 	public Transform Cam;
 	public Transform Player;
 
-
 	private float FinalPosPlayerDistance;
 
 	private Vector3 CamActualPos;
@@ -27,9 +26,6 @@ public class StartGame : MonoBehaviour {
 		//get distances
 
 		FinalPosPlayerDistance = Vector3.Distance (Player.position, PlayerFinalPos.position);
-
-
-		//
 
 		if(Player.rotation.y < 0f){
 			
